@@ -6,7 +6,7 @@ A transaction server for Riak, written in Node.js. This project provides an laye
 
 1. Atomicity of destructive operations/transactions
 2. Consistence values across time-slices
-3. Isolation
+3. Isolation (not really, because I don't want things to lock up.)
 4. Durability: data is persisted in an append-only fashion to Riak
 
 

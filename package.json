@@ -10,7 +10,8 @@
   "scripts": {
     "test": "mocha -w --compilers js:babel-core/register --require babel-polyfill --recursive test/*_test.js",
     "watch": "npm run test ",
-    "build": "babel --out-dir dist src"
+    "build": "babel --out-dir dist/ src/",
+    "prepublish": "yarn run build"
   },
   "repository": "https://github.com/thirdreplicator/raku-transactions.git",
   "author": "David Beckwith",
@@ -18,12 +19,16 @@
   "dependencies": {
     "babel-core": "^6.24.1",
     "babel-polyfill": "^6.23.0",
-    "babel-preset-latest-node": "^0.2.2"
+    "babel-preset-latest-node": "^0.2.2",
+    "env-test": "^1.0.0",
+    "raku": "^2.6.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
+    "babel-preset-flow": "^6.23.0",
     "babel-register": "^6.24.1",
     "chai": "^3.5.0",
+    "flow-bin": "^0.45.0",
     "mocha": "^3.3.0"
   }
 }
