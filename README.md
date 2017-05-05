@@ -1,16 +1,34 @@
 # raku-transactions
 
-A simple interface for eventually consistent transactions for Riak, as an append-only datastore.
+A transaction server for Riak, written in Node.js. This project provides an layer of consistency by caching active key-value pairs and executing transactions atomically.
 
-Because the order of operations in distributed systems cannot be guaranteed, destructive operations run in different orders can produce different end results. Using Riak as an append-only datastore, globally unique timestamps are generated for all operations and transactions. Let's loosely use the term "transaction" to cover both meanings:
+## Goals (ACID)
 
-1. a "coordinated set of operations on different data" as well as
-2. "single operations on an individual piece of data."
+1. Atomicity of destructive operations/transactions
+2. Consistence values across time-slices
+3. Isolation
+4. Durability: data is persisted in an append-only fashion to Riak
 
-Timestamps that are unique to each transaction allow us to construct the correct values in the datastore even if they happened simultaneously. 
 
-How can we produce monotonic ids that uniquely identify each transaction?  There are many ways to do this.  For simplicity we chose to use Redis to assign counting numbers to the active clients and the transactions. Before the client sends the transaction to the Riak cluster, we essentially concatenate the client id to the transaction id.  This ensures that even if clients on different machines submit a query at the same time, they will be given a different timestamps and the transactions can be processed atomically. This also avoids problems of synchronising wall clock time on different computers.
+## Motivation
 
-Using Riak as an append-only store avoids many of the problems associated with ordering destructive operations in parallel distributed systems, and also it has the benefit of preserving a complete change log of your data.
+Because the order of operations in distributed systems cannot be guaranteed, destructive operations run in different orders can produce different end results. Riak is a distributed scalable datastore accessed over the network, so reads and writes may comeback out of order or half written. For example, transaction might be underway in the middle of reading`different values within the transaction. This project was created to provide consistent reads and writes.
 
+## Approach
+
+Globally unique timestamps are generated for all operations and transactions and values are stored as a set of (uniquely) timestamped operations. If you abuse the term "transaction" to mean both single operations on a single piece of data as well as a set of coordinated changes on different pieces of data, we can refer all operations on the database as transactions. This way we can view Riak simple as a transaction log.
+
+To read a datum, you need to read all of its changes and reconstruct the final value. To write, we use an integer counter as a logical clock appendded to a 0-padded client integer id.  This provides a unique and monotonic transaction id so all operations can be ordered unambiguously.
+
+## Conclusion
+
+Leveraging the strength of Riak as an append-only scalable datastore you get
+
+* a complete auditable history of your data
+* scalability
+* availability
+
+but you pay for it with increased latency.
+
+With a transaction server, you get transactions, decreased latency due to caching and the ACID properties that you expect for application development.  
 
