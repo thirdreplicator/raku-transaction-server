@@ -1,14 +1,15 @@
 # raku-transaction-server
 
-A transaction server for Riak, written in Node.js. This project provides an layer of consistency by caching active key-value pairs and executing transactions atomically.
+A transaction server for Riak, written in Node.js. This project provides an layer of consistency by caching active key-value pairs and executing transactions atomically. Clients will talk to this transactions server instead of talking to Riak directly.
 
 ## Goals (ACID)
 
+Riak is not concerned with ACID properties.  The goal of this project is to provide ACID transactions on top of Riak.
+
 1. Atomicity of destructive operations/transactions
-2. Consistence values across time-slices
+2. Consistence view of values across time-slices
 3. Isolation (not really, because I don't want things to lock up.)
 4. Durability: data is persisted in an append-only fashion to Riak
-
 
 ## Motivation
 
@@ -31,4 +32,8 @@ Leveraging the strength of Riak as an append-only scalable datastore you get
 but you pay for it with increased latency.
 
 With a transaction server, you get transactions, decreased latency due to caching and the ACID properties that you expect for application development.  
+
+## Similar work
+
+This project was partially inspired by Datomic.
 
