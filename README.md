@@ -35,5 +35,5 @@ With a transaction server, you get transactions, decreased latency due to cachin
 
 ## Similar work
 
-This project was partially inspired by Datomic.
+This project was partially inspired by [Datomic](http://www.datomic.com/).
 
