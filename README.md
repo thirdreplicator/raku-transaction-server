@@ -1,4 +1,4 @@
-# raku-transactions
+# raku-transaction-server
 
 A transaction server for Riak, written in Node.js. This project provides an layer of consistency by caching active key-value pairs and executing transactions atomically.
 
