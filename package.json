@@ -8,8 +8,8 @@
     "README.md"
   ],
   "scripts": {
-    "test": "mocha -w --compilers js:babel-core/register --require babel-polyfill --recursive test/*_test.js",
-    "watch": "npm run test ",
+    "test":  "mocha         --compilers js:babel-core/register --require babel-polyfill --recursive test/*/*_test.js",
+    "watch": "mocha --watch --compilers js:babel-core/register --require babel-polyfill --recursive test/*/*_test.js",
     "build": "babel --out-dir dist/ src/",
     "prepublish": "yarn run build"
   },
@@ -21,6 +21,7 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-latest-node": "^0.2.2",
     "env-test": "^1.0.0",
+    "express": "^4.15.2",
     "raku": "^2.6.1"
   },
   "devDependencies": {
@@ -29,6 +30,7 @@
     "babel-register": "^6.24.1",
     "chai": "^3.5.0",
     "flow-bin": "^0.45.0",
-    "mocha": "^3.3.0"
+    "mocha": "^3.3.0",
+    "supertest": "^3.0.0"
   }
 }

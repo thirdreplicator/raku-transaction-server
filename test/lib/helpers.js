@@ -1,7 +1,9 @@
 // test/helpers.js
 import { expect } from 'chai'
-import Raku from 'raku'
+import server from '../../src/server'
+import supertest from 'supertest'
 
+import Raku from 'raku'
 const raku = new Raku()
 
 function expectSetEquality(s1, s2) {
@@ -30,4 +32,12 @@ async function print_keys() {
   
 }
 
-export { expectSetEquality, print_keys }
+function start_server(port, init_cb) {
+  return server.app.listen(port, init_cb)
+}
+
+function make_request() {
+  return supertest.agent(server.live)
+}
+
+export { expectSetEquality, print_keys, start_server, make_request }

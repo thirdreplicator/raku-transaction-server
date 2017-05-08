@@ -2,9 +2,10 @@
 ./node_modules
 .*/build/.*
 .*json
+./tmp
 
 [include]
-./src/.*
+./src/
 
 [libs]
 

@@ -31,7 +31,7 @@ Leveraging the strength of Riak as an append-only scalable datastore you get
 
 but you pay for it with increased latency.
 
-With a transaction server, you get transactions, decreased latency due to caching and the ACID properties that you expect for application development.  
+With a transaction server, you get transactions, decreased latency due to caching and the ACID properties that you expect for application development.
 
 ## Similar work
 
