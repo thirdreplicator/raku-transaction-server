@@ -19,5 +19,11 @@ const close = async live => {
 }
 
 let app = express()
+let live = null
 
-export default { app, next_xid, init, close }
+const listen = (port) => {
+  live = app.listen(port)
+  return live
+}
+
+export default { app, next_xid, init, close, listen, live }

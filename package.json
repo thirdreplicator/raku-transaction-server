@@ -8,7 +8,7 @@
     "README.md"
   ],
   "scripts": {
-    "test":  "mocha         --compilers js:babel-core/register --require babel-polyfill --recursive test/*/*_test.js",
+    "test": "mocha         --compilers js:babel-core/register --require babel-polyfill --recursive test/*/*_test.js",
     "watch": "mocha --watch --compilers js:babel-core/register --require babel-polyfill --recursive test/*/*_test.js",
     "build": "babel --out-dir dist/ src/",
     "prepublish": "yarn run build"
@@ -31,6 +31,6 @@
     "chai": "^3.5.0",
     "flow-bin": "^0.45.0",
     "mocha": "^3.3.0",
-    "supertest": "^3.0.0"
+    "node-fetch": "^1.6.3"
   }
 }

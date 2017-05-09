@@ -1,10 +1,11 @@
 // http_test.js
 
 import { expect } from 'chai'
-import { make_request } from '../lib/helpers'
+import fetch from 'node-fetch'
 import server from '../../src/server'
 
-const request = make_request()
+let app = server.app.listen(3000)
+let BASE = 'http://localhost:3000'
 
 describe('Transaction server', () => {
   describe('server.next_xid', () => {
@@ -16,9 +17,16 @@ describe('Transaction server', () => {
 
   describe('/world/:key', () => {
     it('should return null if the key is not in cache or disk', () => {
-      request('/world/x')
-
+      return fetch(BASE + '/world/x')
+        .then(res => {
+          expect(res.status).to.eql(200)
+          expect(res.headers.get('content-type')).to.eql('application/json')
+          return res.json()
+        })
+        .then(json => {
+          expect(json).to.eql(null)
+        })
     })
-  })
+  }) // /world/:key
 
 }) // Transaction server
