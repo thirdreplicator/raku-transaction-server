@@ -1,14 +1,13 @@
 // world_test.js
 import { expect } from 'chai'
-import Raku from 'raku'
 import world from '../../src/world'
+import Raku from 'raku'
 
 const raku = new Raku()
 
 describe('world, an in-memory cache of all key-value pairs', () => {
   beforeEach(() => {
-    world.clear(100)
-    //return raku.deleteAll()
+    world.clear()
   })
 
   describe('world {}', () => {
@@ -16,34 +15,30 @@ describe('world, an in-memory cache of all key-value pairs', () => {
       expect(world.store === Object(world.store)).to.be.true
     })
 
-    describe('get(k)', () => {
+    describe('m/get(k)', () => {
       it ('should retrieve value if it exists', () => {
-        world.put('x', 42) // world.x == {value: 42, hits: 0}
+        world.put('x', 42) // world.store.x == {value: 42, hits: 0}
         expect(world.get('x').value).to.eql(42)
       })
 
       it ('should increment hits if it exists', () => {
-        world.put('x', 42) // world.x == {value: 42, hits: 0}
-        expect(world.get('x').hits).to.eql(1)
-        expect(world.get('x').hits).to.eql(2)
-        expect(world.get('x').hits).to.eql(3)
+        world.put('x', 42) // world.store.x == {value: 42, hits: 1}
+        world.mget(['x'])
+        expect(world.store.x.hits).to.eql(2)
+        world.mget(['x'])
+        expect(world.store.x.hits).to.eql(3)
+        world.mget(['x'])
+        expect(world.store.x.hits).to.eql(4)
       })
 
       it('should load values if they are not in the in-memory kv store', () => {
         const result = world.get('yy')
         expect(result.constructor.name).to.eql('Promise')
       })
-
-      it('should have a hit count property', () => {
-        return world.get('zz').then(zz => {
-          expect(zz).to.have.property('hits')
-          expect(zz.hits).to.eql(0)
-        })
-      })
     })
 
     describe('compact()', () => {
-      it('should not exceed world.MAX_KEYS number of keys', () => {
+      it('should remove n keys if compact(n) is called', () => {
         expect(world.store === Object(world.store)).to.be.true
         world.put('a', 1)
         world.put('b', 1)

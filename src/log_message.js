@@ -1,4 +1,7 @@
 // log_message.js
+import Raku from 'raku'
+
+const raku = new Raku()
 
 const VERBS = ['put', 'del', 'add', 'rem', 'inc', 'dec']
 
@@ -11,4 +14,21 @@ const gen_message = (op: string, arg: mixed[], xid: number) => {
   return { op, arg, xid }
 }
 
-export { VERBS, gen_message }
+const save_message = (k, message) => {
+  return raku.sadd(k, JSON.stringify(message))
+}
+
+const load_messages = (k) => {
+  return raku.smembers(k).map(x => JSON.parse(x))
+}
+
+const save_operations = (operations, xid) => {
+  const promises = []
+  operations.forEach( operation => {
+    const {k, op, arg} = operation
+    const message = JSON.stringify(gen_message(op, arg, xid))
+    promises.push(raku.sadd(k, message))
+  })
+  return Promise.all(promises)
+}
+export { VERBS, gen_message, save_message, load_messages, save_operations}

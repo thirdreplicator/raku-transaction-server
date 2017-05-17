@@ -10,6 +10,7 @@ const reconstruct = (logs, current_value) => {
   if (logs.length == 0) return next_value
   const [head, ...rest] = logs
   const {op, arg} = head
+  if (typeof head == 'string') { throw 'You need to parse the logs into JSON using JSON.parse before reconstructing the value.' }
   if (op == 'del') {
     next_value = null
   } else if (op == 'put') {
@@ -39,7 +40,6 @@ const reconstruct = (logs, current_value) => {
   } else {
     return next_value
   }
-
 }
 
 export { reconstruct }

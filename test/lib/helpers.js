@@ -26,9 +26,7 @@ async function print_keys() {
   keys.forEach( async k => {
     const v = await load(k)
     console.log(k.key, '->', v)
-
   })
-  
 }
 
 export { expectSetEquality, print_keys }
