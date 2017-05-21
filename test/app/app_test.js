@@ -208,7 +208,6 @@ describe('Transaction server', () => {
               })
               .then(result => expect(result).to.be.true)
               .then(_ => expect(server.world.store['x'].value).to.eql(-3))
-              .catch(e => console.log(e))
           })
         }) // dec
 

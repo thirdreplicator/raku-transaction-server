@@ -1,8 +1,10 @@
 // txn_response.js
 //
 
+import { is_waiting } from './utils'
+
 class TxnResponse {
-  constructor(res, keys) {
+  constructor(res, keys, store) {
     this.res = res
     this.keys = keys
     this.completed = {}
@@ -12,16 +14,30 @@ class TxnResponse {
       this.completed[k] = false
       this.values[k] = undefined
     }
+    // Mark the completed keys as completed.
+    this.update_values(store)
   }
 
-  complete(k, v, txn_queue) {
+  mark_complete(k, v) {
     this.completed[k] = true
     this.values[k] = v
-    if (this.num_completed() == this.keys.length) {
-      this.status = 'done'
-      this.res.json(this.values)
-      this.clean_up(txn_queue)
-    }
+  }
+
+  completed_kvs(store) {
+    const keys_with_values = this.keys.filter(k => !is_waiting(store[k]))
+    let kv_pairs = {}
+    keys_with_values.forEach(k => {
+      kv_pairs[k] = store[k].value
+    })
+    return kv_pairs
+  }
+
+  update_values(store) {
+    const latest_values = this.completed_kvs(store)
+    Object.keys(latest_values).forEach(k => {
+      this.completed[k] = true
+    })
+    Object.assign(this.values, latest_values)
   }
 
   num_completed() {
@@ -39,7 +55,7 @@ class TxnResponse {
   }
 
   is_done() {
-    return this.status == 'done'
+    return this.num_completed() == this.keys.length
   }
 
   clean_up(txn_queue) {

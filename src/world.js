@@ -1,7 +1,9 @@
 // world.js
-import is_plain from 'lodash.isplainobject'
 import TxnResponse from './txn_response'
 import { reconstruct } from './reconstruct_value'
+import { is_waiting, is_empty } from './utils'
+import is_plain from 'lodash.isplainobject'
+
 import Raku from 'raku'
 
 const raku = new Raku()
@@ -12,7 +14,7 @@ const txn_queue = {}
 let MAX_KEYS = 1000000
 let MIN_KEYS = 800000
 
-const load = (k) => {
+const load = (k, keys) => {
   return raku.smembers(k)
     .then(mem => {
       return mem.map(JSON.parse)
@@ -25,7 +27,10 @@ const load = (k) => {
     })
     .then(v => {
       store[k] = { value: v, hits: 0 }
-      return update_request(k, v)
+      return update_requests(k, v)
+    })
+    .catch(e => {
+      console.log(`ERROR while load(${k}, ${keys}) was called:`, e)
     })
 }
 
@@ -39,37 +44,36 @@ const queue_key = (key, txn_resp) => {
 }
 
 const queue_up_request = (res, keys) => {
-  const txn_resp = new TxnResponse(res, keys)
+  const txn_resp = new TxnResponse(res, keys, store)
   for(let k of keys) {
     queue_key(k, txn_resp)
   }
 }
 
-const update_request = (k, v) => {
+const update_requests = (k, v) => {
   if (Array.isArray(txn_queue[k])) {
     txn_queue[k].forEach(request => {
       if (!request.is_done()) {
-        request.complete(k, v, txn_queue)
+        request.mark_complete(k, v)
+        if (request.is_done()) {
+          request.update_values(store)
+          request.send()
+          request.clean_up(txn_queue)
+        }
       }
     })
   } else {
+    console.warn(`WARNING: txn_queue[${k}] is not an array: ${txn_queue[k]}`)
     return txn_queue[k]
   }
 }
 
-const is_waiting = (v) => {
-  return typeof v == 'object' && v.constructor.name == 'Promise'
-}
-
-const is_empty = (v) => {
-  return v == undefined || v == null
-}
 
 const mget = (keys) => {
   let result = {}
   let has_waiting = false
   for (let k of keys) {
-    result[k] = world.get(k)
+    result[k] = world.get(k, keys)
     if (is_waiting(result[k])) {
       has_waiting = true
     }
@@ -87,9 +91,12 @@ const mget = (keys) => {
   }
 }
 
-const get = (k) => {
+// Pass in a complete list of keys so that fresh
+//   values can be refetched when the load promise completes.
+const get = (k, keys) => {
   if (is_empty(store[k])) {
-    store[k] = load(k)
+    // Load will return a promise.
+    store[k] = load(k, keys)
   }
   return store[k]
 }
@@ -153,11 +160,18 @@ const clear = (n = Object.keys(store).length) => {
     .sort((a, b) => a.hits > b.hits)
     .map(obj => obj.k)
 
+  // Delete the n least popular keys.
   for (let i=0; i < n; i++) {
     let k = keys[i]
     store[k] = null
     delete store[k]
   }
+
+  // Reset the popularity counter for the remaining keys.
+  // Otherwise, they will never go away if they get too high.
+  Object.keys(store).forEach(k => {
+    store[k].hits = 0
+  })
 }
 
 const compact = (n) => {
