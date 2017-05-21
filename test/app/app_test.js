@@ -24,14 +24,15 @@ describe('Transaction server', () => {
   before(() => server.restart(3000))
   beforeEach(() => {
     server.world.clear()
-    return raku.deleteAll()
+    return raku.delete_all()
   })
   after(() => server.close())
 
   describe('server.next_xid', () => {
     it('should generate unique, monotonic increasing transaction ids', async () => {
-      expect(server.next_xid()).to.eql(1)
-      expect(server.next_xid()).to.eql(2)
+      const start = server.next_xid()
+      const stop = server.next_xid()
+      expect(stop - start).to.eql(1)
     })
   }) // next_xid
 

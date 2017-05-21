@@ -9,8 +9,8 @@ import { expectSetEquality } from '../lib/helpers'
 const raku = new Raku()
 
 describe('load_messages(k)', () => {
-  beforeEach(() => raku.deleteAll())
-  after(() => raku.deleteAll())
+  beforeEach(() => raku.delete_all())
+  after(() => raku.delete_all())
 
   it('should load all messages for a given key', async () => {
     let operations = [

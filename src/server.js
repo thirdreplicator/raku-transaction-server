@@ -39,6 +39,10 @@ server.app.get('/mget', function(req, res, next) {
   handle_mget(keys, res, next)
 })
 
+server.app.get('/xid', function(req, res, next) {
+  res.json(server.XID)
+})
+
 // Note: request header content-type must be set to 'application/json'.
 // Input JSON is: [{k, op, arg: Array}]
 // Output is 'ok' in JSON format.
@@ -120,7 +124,14 @@ if (server.app.get('env') === 'production') {
  * Helper functions
  */
 
-server.next_xid = () => ++(server.XID)
+server.next_xid = () => {
+  server.XID += 1
+  return server.XID
+}
+
+server.get_xid = () => {
+  return server.XID
+}
 
 server.init = async () => {
   server.XID = await raku.cget('xid')
@@ -139,22 +150,34 @@ const handle_mget = (keys, res, next) => {
   }
 }
 
-server.restart = (port) => {
+server.restart = async (port) => {
   if (server.live != null) {
     server.close()
   }
+  await server.init()
   server.live = server.app.listen(port)
+  server.interval = periodic_save()
 }
 
 server.close = async () => {
   await raku.cset('xid', server.XID)
+  clearInterval(server.interval)
   if (server.live != null) {
     server.live.close()
   }
 }
 
-server.interval = setInterval(() => {
-  raku.cset('xid', server.XID)
-}, 1000)
+
+const periodic_save = () => {
+  let previous_xid = server.get_xid()
+  server.interval = setInterval(() => {
+    let xid = server.get_xid()
+    if (xid != previous_xid) {
+      console.log('saving xid:', xid)
+      raku.cset('xid', xid)
+    }
+    previous_xid = xid
+  }, 1000)
+}
 
 export default server

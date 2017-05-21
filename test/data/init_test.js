@@ -11,14 +11,15 @@ const PORT = 3000
 describe('Initialization of transaction server', () => {
   beforeEach(() => {
     server.restart(PORT)
-    return raku.deleteAll()
+    return raku.delete_all()
   })
 
   describe('app.xid', () => {
     it('should initialize xid from last known value', async () => {
-      await raku.cset('xid', 4999)
+      let xid = server.next_xid()
+      await raku.cset('xid', xid)
       await server.init()
-      expect(server.next_xid()).to.eql(5000)
+      expect(server.next_xid()).to.eql(xid + 1)
     })
   })
 }) // Initialization of transaction server

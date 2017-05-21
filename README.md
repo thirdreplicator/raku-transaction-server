@@ -7,9 +7,9 @@ A transaction server for Riak, written in Node.js. This project provides an laye
 Riak is not concerned with ACID properties.  The goal of this project is to provide ACID transactions on top of Riak.
 
 1. Atomicity of destructive operations/transactions
-2. Consistence view of values across time-slices
-3. Isolation (not really, because I don't want things to lock up.)
-4. Durability: data is persisted in an append-only fashion to Riak
+2. Consistency view of values across time-slices. Partially failed transactions are rolled back completely.
+3. Isolation. Transactions occur wholly one after the other.
+4. Durability: Although data is persisted in an append-only fashion to Riak, we don't guarantee durability.
 
 ## Motivation
 

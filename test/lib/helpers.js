@@ -25,7 +25,7 @@ async function print_keys() {
   const values = await Promise.all(keys.map(k => load(k)))
   keys.forEach( async k => {
     const v = await load(k)
-    console.log(k.key, '->', v)
+    console.log(`(${k.bucket}, ${k.key}) -> ${v}`)
   })
 }
 

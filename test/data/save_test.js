@@ -8,8 +8,8 @@ import server from '../../src/server'
 const raku = new Raku()
 
 describe('save_message(k, message)', () => {
-  beforeEach(() => raku.deleteAll())
-  after(() => raku.deleteAll())
+  beforeEach(() => raku.delete_all())
+  after(() => raku.delete_all())
 
   describe('put', () => {
     it('should take an operation and save it the the set with key, k', async () => {

@@ -22,18 +22,18 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-latest-node": "^0.2.2",
     "body-parser": "^1.17.1",
-    "env-test": "^1.0.0",
     "express": "^4.15.2",
     "lodash.isplainobject": "^4.0.6",
     "log": "^1.4.0",
     "query-string": "^4.3.4",
-    "raku": "^2.6.1"
+    "raku": "3.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "babel-register": "^6.24.1",
     "chai": "^3.5.0",
+    "env-test": "^1.0.0",
     "flow-bin": "^0.45.0",
     "mocha": "^3.3.0",
     "node-fetch": "^1.6.3",

@@ -4,7 +4,7 @@ import { gen_xid } from '../../src/xid.js'
 const raku = new Raku()
 
 describe('Transaction ID (xid) generation', () => {
-  beforeEach(() => raku.deleteAll())
+  beforeEach(() => raku.delete_all())
 
   it('should take two integer arguments and generate a decimal number', () => {
     const logical_time = 987
